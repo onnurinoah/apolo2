@@ -57,10 +57,15 @@ export async function POST(request: NextRequest) {
       source: "ai",
       questionId,
     });
-  } catch {
-    return NextResponse.json(
-      { error: "AI 답변 생성 중 오류가 발생했습니다." },
-      { status: 500 }
-    );
+  } catch (error) {
+    console.error("OpenAI answer generation failed:", error);
+
+    return NextResponse.json({
+      answer:
+        "OpenAI 실시간 답변 호출이 실패했습니다. 보통 결제 한도, 프로젝트 권한, 또는 모델 접근 권한 문제일 수 있습니다. 잠시 후 다시 시도하거나 OpenAI billing/project 설정을 확인해주세요.",
+      styleId,
+      source: "fallback",
+      questionId,
+    });
   }
 }

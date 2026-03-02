@@ -7,7 +7,11 @@ export function getOpenAIClient(): OpenAI | null {
     return null;
   }
   if (!client) {
-    client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+    client = new OpenAI({
+      apiKey: process.env.OPENAI_API_KEY,
+      maxRetries: 0,
+      timeout: 15000,
+    });
   }
   return client;
 }

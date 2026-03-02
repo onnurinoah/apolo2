@@ -19,13 +19,16 @@ export async function GET(request: NextRequest) {
         aiReachable = false;
         aiError = "OpenAI client initialization failed";
       } else {
-        await openai.models.retrieve("gpt-4o-mini");
+        await openai.chat.completions.create({
+          model: "gpt-4o-mini",
+          messages: [{ role: "user", content: "ping" }],
+          max_tokens: 1,
+        });
         aiReachable = true;
       }
     } catch (error) {
       aiReachable = false;
-      aiError =
-        error instanceof Error ? error.message : "Unknown OpenAI error";
+      aiError = error instanceof Error ? error.message : "Unknown OpenAI error";
       console.error("OpenAI health probe failed:", error);
     }
   }
