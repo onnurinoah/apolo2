@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useMemo, useState } from "react";
+import { useDeploymentStatus } from "@/hooks/useDeploymentStatus";
 import { useTargets } from "@/hooks/useTargets";
 import {
   CreateTargetInput,
@@ -18,6 +19,7 @@ function formatDate(value: string | null) {
 }
 
 export default function TargetsPage() {
+  const { status, loading: statusLoading } = useDeploymentStatus();
   const {
     targets,
     hydrated,
@@ -54,6 +56,42 @@ export default function TargetsPage() {
 
   return (
     <div className="px-4 py-4 space-y-4">
+      <section className="rounded-3xl border border-gray-100 bg-white p-4 shadow-card">
+        <div className="flex items-center justify-between gap-3">
+          <div>
+            <p className="text-xs font-semibold text-apolo-yellow-dark uppercase tracking-wide">
+              배포 상태
+            </p>
+            <p className="mt-1 text-sm text-gray-500">
+              Vercel에서 OpenAI 연결 상태를 앱 안에서 바로 확인할 수 있습니다.
+            </p>
+          </div>
+          <span
+            className={`rounded-full px-3 py-1 text-xs font-semibold ${
+              status?.hasOpenAIKey
+                ? "bg-green-100 text-green-700"
+                : "bg-amber-100 text-amber-700"
+            }`}
+          >
+            {statusLoading
+              ? "확인 중"
+              : status?.hasOpenAIKey
+                ? "AI 연결 준비됨"
+                : "AI 키 미설정"}
+          </span>
+        </div>
+
+        <div className="mt-3 rounded-2xl bg-gray-50 px-4 py-3 text-sm text-gray-600">
+          {statusLoading ? (
+            "배포 환경을 확인하고 있습니다."
+          ) : status?.hasOpenAIKey ? (
+            `현재 환경은 ${status.environment}이며 OpenAI API 키가 연결되어 있습니다.`
+          ) : (
+            "현재 환경변수에 OPENAI_API_KEY가 없거나 유효하지 않습니다. Vercel Settings > Environment Variables에서 추가하세요."
+          )}
+        </div>
+      </section>
+
       <section className="bg-white rounded-3xl border border-gray-100 shadow-card p-4">
         <div className="flex items-start justify-between gap-3">
           <div>
@@ -257,4 +295,3 @@ export default function TargetsPage() {
     </div>
   );
 }
-
