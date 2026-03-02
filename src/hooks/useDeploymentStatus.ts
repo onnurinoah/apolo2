@@ -5,6 +5,8 @@ import { useEffect, useState } from "react";
 interface DeploymentStatus {
   hasOpenAIKey: boolean;
   environment: string;
+  aiReachable: boolean | null;
+  aiError: string | null;
 }
 
 export function useDeploymentStatus() {
@@ -14,7 +16,7 @@ export function useDeploymentStatus() {
   useEffect(() => {
     let active = true;
 
-    fetch("/api/status")
+    fetch("/api/status?probe=ai")
       .then((res) => res.json())
       .then((data) => {
         if (!active) return;
@@ -39,4 +41,3 @@ export function useDeploymentStatus() {
     loading,
   };
 }
-

@@ -68,15 +68,19 @@ export default function TargetsPage() {
           </div>
           <span
             className={`rounded-full px-3 py-1 text-xs font-semibold ${
-              status?.hasOpenAIKey
+              status?.aiReachable
                 ? "bg-green-100 text-green-700"
-                : "bg-amber-100 text-amber-700"
+                : status?.hasOpenAIKey
+                  ? "bg-orange-100 text-orange-700"
+                  : "bg-amber-100 text-amber-700"
             }`}
           >
             {statusLoading
               ? "확인 중"
-              : status?.hasOpenAIKey
-                ? "AI 연결 준비됨"
+              : status?.aiReachable
+                ? "AI 연결 정상"
+                : status?.hasOpenAIKey
+                  ? "AI 연결 실패"
                 : "AI 키 미설정"}
           </span>
         </div>
@@ -84,8 +88,10 @@ export default function TargetsPage() {
         <div className="mt-3 rounded-2xl bg-gray-50 px-4 py-3 text-sm text-gray-600">
           {statusLoading ? (
             "배포 환경을 확인하고 있습니다."
+          ) : status?.aiReachable ? (
+            `현재 환경은 ${status.environment}이며 OpenAI API와 실제로 통신되고 있습니다.`
           ) : status?.hasOpenAIKey ? (
-            `현재 환경은 ${status.environment}이며 OpenAI API 키가 연결되어 있습니다.`
+            `현재 환경은 ${status.environment}이며 키는 감지됐지만 실제 OpenAI 호출은 실패했습니다.${status.aiError ? ` 원인: ${status.aiError}` : ""}`
           ) : (
             "현재 환경변수에 OPENAI_API_KEY가 없거나 유효하지 않습니다. Vercel Settings > Environment Variables에서 추가하세요."
           )}
